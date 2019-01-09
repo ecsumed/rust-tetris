@@ -23,7 +23,7 @@ const drawGrid = () => {
 
   // Horizontal lines.
   for (let j = 0; j <= HEIGHT; j++) {
-    ctx.moveTo(0,                           j * (CELL_SIZE + 1) + 1);
+    ctx.moveTo(0, j * (CELL_SIZE + 1) + 1);
     ctx.lineTo((CELL_SIZE + 1) * WIDTH + 1, j * (CELL_SIZE + 1) + 1);
   }
 
