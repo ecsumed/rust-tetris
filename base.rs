@@ -50,8 +50,20 @@ impl Piece {
         })
     }
 
-    fn move_down(&mut self) {
+    fn pre_drop(&mut self) -> Vec<Block> {
+        self.blocks.iter().map(|b| Block{x: b.x, y: b.y + 1}).collect()
+    }
+    
+    fn drop(&mut self) {
         self.blocks = self.blocks.iter().map(|b| Block{x: b.x, y: b.y + 1}).collect()
+    }
+    
+    fn right(&mut self) {
+        self.blocks = self.blocks.iter().map(|b| Block{x: b.x + 1, y: b.y}).collect()
+    }
+    
+    fn left(&mut self) {
+        self.blocks = self.blocks.iter().map(|b| Block{x: b.x - 1, y: b.y}).collect()
     }
     
     fn get_floor_blocks(&self) -> Vec<Block> {
@@ -81,14 +93,14 @@ impl fmt::Display for Piece {
 }
 
 struct Canvas {
-    width: u64,
-    height: u64,
+    width: i32,
+    height: i32,
     cells: Vec<u8>,
     active_piece: Option<Piece>,
 }
 
 impl Canvas {
-    fn new(width: u64, height: u64) -> Canvas {
+    fn new(width: i32, height: i32) -> Canvas {
         let cells = (0..width * height).map(|i| 0).collect();
         Canvas {
             width: width,
@@ -101,7 +113,7 @@ impl Canvas {
     fn piece_integrate(&mut self) {
         if let Some(piece) = &self.active_piece {
             for block in piece.blocks.iter() {
-                let index = ((self.width as i32 * (block.y)) + (block.x)) as usize;
+                let index = ((self.width * (block.y)) + (block.x)) as usize;
                 // println!("x: {}, y:{}", block.x, block.y);
                 // println!("index: {}", index);
                 self.cells[index] = 1;
@@ -112,7 +124,7 @@ impl Canvas {
     fn piece_disintegrate(&mut self) {
         if let Some(piece) = &self.active_piece {
             for block in piece.blocks.iter() {
-                let index = ((self.width as i32 * (block.y)) + (block.x)) as usize;
+                let index = ((self.width * (block.y)) + (block.x)) as usize;
                 self.cells[index] = 0;
             }
         }
@@ -125,13 +137,35 @@ impl Canvas {
     fn tick(&mut self) {
         self.piece_disintegrate();
     
-        
-//        if let Some(piece) = &mut self.active_piece {
-//            piece.move_down();
-//            let floor_blocks = piece.get_floor_blocks();
-//            println!("{:?}", floor_blocks);
-//        }
+        if let Some(piece) = &mut self.active_piece {
+            //geometry::rotate_l(piece);
+            
+            if self.wont_collide(&piece.pre_drop()) {
+                piece.drop();
+            }
+            
+            piece.right();
+            piece.right();
+            piece.right();
+            piece.right();
+            piece.right();
+            //let floor_blocks = piece.get_floor_blocks();
+            //println!("{:?}", floor_blocks);
+        }
         self.piece_integrate();
+    }
+    
+    fn wont_collide(&self, block: &Vec<Block>) -> bool {
+        block.
+        iter().
+        all(
+            |block| {
+                block.x >= 0 &&
+                block.x < (self.width - 1) &&
+                block.y >= 0 &&
+                block.y < (self.height - 1)
+            }
+        )
     }
 }
 
@@ -214,10 +248,10 @@ mod geometry {
 }
 
 fn main() {
-    let lp = Piece::new(PieceKind::long).unwrap();
+    let mut lp = Piece::new(PieceKind::tshape).unwrap();
 
     let mut frame = Canvas::new(10, 20);
-
+    
     frame.piece_add(lp);
     frame.tick();
 
