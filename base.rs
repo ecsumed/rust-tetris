@@ -8,8 +8,17 @@ use std::collections::HashMap;
 
 #[derive(Debug)]
 struct Block {
-    x: u8,
-    y: u8,
+    x: i32,
+    y: i32,
+}
+
+impl Block {
+    fn negate(&self) -> Block {
+        Block {
+            x: -self.x,
+            y: -self.y,
+        }
+    }
 }
 
 enum PieceKind {
@@ -21,19 +30,19 @@ enum PieceKind {
     rsshape,    //reversed 'S' shape
 }
 
-struct Piece {
+pub struct Piece {
     blocks: Vec<Block>,
 }
 
 impl Piece {
     fn new(kind: PieceKind) -> Result<Piece, &'static str> {
         let blocks = match kind {
-            PieceKind::long => [(0, 0), (0, 1), (0, 2), (0, 3)],
-            PieceKind::tshape => [(0, 0), (0, 1), (1, 1), (0, 2)],
-            PieceKind::lshape => [(0, 0), (0, 1), (0, 2), (1, 2)],
-            PieceKind::rlshape => [(1, 0), (1, 1), (1, 2), (0, 2)],
-            PieceKind::sshape => [(0, 0), (0, 1), (1, 1), (1, 2)],
-            PieceKind::rsshape => [(1, 0), (1, 1), (0, 1), (0, 2)],
+            PieceKind::long => [(0, 1), (0, 0), (0, 2), (0, 3)],
+            PieceKind::tshape => [(0, 1), (0, 0), (1, 1), (0, 2)],
+            PieceKind::lshape => [(0, 1), (0, 0), (0, 2), (1, 2)],
+            PieceKind::rlshape => [(1, 1), (1, 0), (1, 2), (0, 2)],
+            PieceKind::sshape => [(1, 1), (0, 1), (0, 0), (1, 2)],
+            PieceKind::rsshape => [(1, 1), (1, 0), (0, 1), (0, 2)],
             _ => return Err("Piece kind not found!"),
         };
         Ok(Piece {
@@ -92,7 +101,7 @@ impl Canvas {
     fn piece_integrate(&mut self) {
         if let Some(piece) = &self.active_piece {
             for block in piece.blocks.iter() {
-                let index = ((self.width as u8 * (block.y)) + (block.x)) as usize;
+                let index = ((self.width as i32 * (block.y)) + (block.x)) as usize;
                 // println!("x: {}, y:{}", block.x, block.y);
                 // println!("index: {}", index);
                 self.cells[index] = 1;
@@ -103,7 +112,7 @@ impl Canvas {
     fn piece_disintegrate(&mut self) {
         if let Some(piece) = &self.active_piece {
             for block in piece.blocks.iter() {
-                let index = ((self.width as u8 * (block.y)) + (block.x)) as usize;
+                let index = ((self.width as i32 * (block.y)) + (block.x)) as usize;
                 self.cells[index] = 0;
             }
         }
@@ -117,11 +126,11 @@ impl Canvas {
         self.piece_disintegrate();
     
         
-        if let Some(piece) = &mut self.active_piece {
-            piece.move_down();
-            let floor_blocks = piece.get_floor_blocks();
-            println!("{:?}", floor_blocks);
-        }
+//        if let Some(piece) = &mut self.active_piece {
+//            piece.move_down();
+//            let floor_blocks = piece.get_floor_blocks();
+//            println!("{:?}", floor_blocks);
+//        }
         self.piece_integrate();
     }
 }
@@ -139,8 +148,73 @@ impl fmt::Display for Canvas {
     }
 }
 
+mod geometry {
+    use Block;
+    use Piece;
+
+    pub fn rotate_l(piece: &mut Piece) {
+        let degree_90 = -90.0_f64.to_radians();
+        let rotated_piece = transpose_piece(&piece, &piece.blocks[0]);
+        let rotated_piece = rotate_piece(&rotated_piece, degree_90);
+        let rotated_piece = untranspose_piece(&rotated_piece, &piece.blocks[0]);
+        std::mem::replace(piece, rotated_piece);
+    }
+    
+    pub fn rotate_r(piece: &mut Piece) {
+        let degree_90 = 90.0_f64.to_radians();
+        let rotated_piece = transpose_piece(&piece, &piece.blocks[0]);
+        let rotated_piece = rotate_piece(&rotated_piece, degree_90);
+        let rotated_piece = untranspose_piece(&rotated_piece, &piece.blocks[0]);
+        std::mem::replace(piece, rotated_piece);
+    }
+
+    fn rotate_piece(piece: &Piece, angle: f64) -> Piece {
+        Piece {
+            blocks: piece
+                .blocks
+                .iter()
+                .map(|point| rotate_point(&point, angle))
+                .collect(),
+        }
+    }
+
+    fn transpose_piece(piece: &Piece, center: &Block) -> Piece {
+        Piece {
+            blocks: piece
+                .blocks
+                .iter()
+                .map(|point| transpose_point(&point, center))
+                .collect(),
+        }
+    }
+
+    fn untranspose_piece(piece: &Piece, center: &Block) -> Piece {
+        Piece {
+            blocks: piece
+                .blocks
+                .iter()
+                .map(|point| transpose_point(&point, &center.negate()))
+                .collect(),
+        }
+    }
+
+    fn rotate_point(point: &Block, angle: f64) -> Block {
+        Block {
+            x: -(angle.sin() * (point.y as f64)) as i32,
+            y: (angle.sin() * (point.x as f64)) as i32,
+        }
+    }
+
+    fn transpose_point(point: &Block, center: &Block) -> Block {
+        Block {
+            x: point.x - center.x,
+            y: point.y - center.y,
+        }
+    }
+}
+
 fn main() {
-    let lp = Piece::new(PieceKind::rsshape).unwrap();
+    let lp = Piece::new(PieceKind::long).unwrap();
 
     let mut frame = Canvas::new(10, 20);
 
