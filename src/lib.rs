@@ -16,6 +16,7 @@ macro_rules! log {
 
 
 mod piece;
+mod geometry;
 mod canvas;
 
 //#[wasm_bindgen]

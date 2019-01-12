@@ -95,6 +95,10 @@ canvas.addEventListener('keydown', function(event) {
 
         // Up pressed
         case "ArrowUp":
+            frame.piece_rotate_clockwise();
+
+            drawGrid();
+            drawCells();
             break;
 
         // Down pressed

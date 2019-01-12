@@ -74,6 +74,18 @@ impl Canvas {
 		log!("blocks: {}", self.active_piece.as_ref().unwrap());
         self.piece_integrate();
     }
+
+    pub fn piece_rotate_clockwise(&mut self) {
+        self.piece_disintegrate();
+        let drop_piece = self.wont_collide(&self.active_piece.as_ref().unwrap().pre_rotate_right());  
+        if let Some(piece) = &mut self.active_piece {
+            if drop_piece {
+                piece.rotate_right();
+            }
+        }
+		log!("blocks: {}", self.active_piece.as_ref().unwrap());
+        self.piece_integrate();
+    }
     
     pub fn cells(&self) -> *const u8 {
         self.cells.as_ptr()
@@ -100,7 +112,6 @@ impl Canvas {
         }
     }
     
-
     pub fn piece_add(&mut self, piece: Piece) {
         self.active_piece = Some(piece);
     }

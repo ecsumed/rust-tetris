@@ -1,4 +1,5 @@
 use std::fmt;
+use geometry;
 
 use rand::{
     distributions::{Distribution, Standard},
@@ -91,6 +92,45 @@ impl Piece {
     pub fn up(&mut self) {
         self.blocks = self.blocks.iter().map(|b| Block{x: b.x, y: b.y - 1}).collect()
     }
+
+    pub fn pre_rotate_right(&self) -> Vec<Block> {
+        let degree_90 = 90.0_f64.to_radians();
+        let rotated_piece = Piece::transpose(self, &self.blocks[0]);
+        let rotated_piece = Piece::rotate(&rotated_piece, degree_90);
+        Piece::transpose(
+            &rotated_piece,
+            &self.blocks[0].negate()
+        ).blocks
+    }
+    
+    pub fn rotate_right(&mut self) {
+        let degree_90 = 90.0_f64.to_radians();
+        let rotated_piece = Piece::transpose(self, &self.blocks[0]);
+        let rotated_piece = Piece::rotate(&rotated_piece, degree_90);
+        let rotated_piece = Piece::transpose(&rotated_piece, &self.blocks[0].negate());
+        std::mem::replace(self, rotated_piece);
+    }
+
+    fn rotate(piece: &Piece, angle: f64) -> Piece {
+        Piece {
+            blocks: piece
+                .blocks
+                .iter()
+                .map(|point| geometry::rotate_point(&point, angle))
+                .collect(),
+        }
+    }
+
+    fn transpose(piece: &Piece, center: &Block) -> Piece {
+        Piece {
+            blocks: piece
+                .blocks
+                .iter()
+                .map(|point| geometry::transpose_point(&point, center))
+                .collect(),
+        }
+    }
+    
 }
 
 impl fmt::Display for Piece {
