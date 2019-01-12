@@ -3,6 +3,8 @@ import { Canvas } from "tetris";
 import { memory } from "tetris/tetris_bg";
 
 const GRID_COLOR = "#CCCCCC";
+const EMPTY_COLOR = "#FFFFFF";
+const BLOCK_COLOR = "#5CB3FF";
 const CELL_SIZE = 25; // px
 const WIDTH = '10'
 const HEIGHT = '21'
@@ -38,13 +40,13 @@ const drawCells = () => {
 
   ctx.beginPath();
 
-  for (let row = 0; row < height; row++) {
-    for (let col = 0; col < width; col++) {
+  for (let row = 0; row < HEIGHT; row++) {
+    for (let col = 0; col < WIDTH; col++) {
       const idx = getIndex(row, col);
 
       ctx.fillStyle = cells[idx] === 0
-        ? DEAD_COLOR
-        : ALIVE_COLOR;
+        ? EMPTY_COLOR
+        : BLOCK_COLOR;
 
       ctx.fillRect(
         col * (CELL_SIZE + 1) + 1,
@@ -58,10 +60,18 @@ const drawCells = () => {
   ctx.stroke();
 };
 
+const getIndex = (row, column) => {
+  return row * WIDTH + column;
+};
+
 drawGrid();
     
 const frame = Canvas.new(WIDTH, HEIGHT);
 
-frame.tick();
 
+frame.tick();
+frame.tick();
+frame.tick();
+frame.tick();
+frame.tick();
 drawCells();

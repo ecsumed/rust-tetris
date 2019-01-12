@@ -1,10 +1,11 @@
 use wasm_bindgen::prelude::*;
 
-//use utils;
+use utils;
 use std::fmt;
 
 use piece::Block;
 use piece::Piece;
+use piece::PieceKind;
 
 /// Public struct, exported to JavaScript.
 #[wasm_bindgen]
@@ -19,7 +20,9 @@ pub struct Canvas {
 #[wasm_bindgen]
 impl Canvas {
     pub fn new(width: i32, height: i32) -> Canvas {
-		//utils::set_panic_hook();
+		// log!("width: {}, height: {}", width, height);
+
+		utils::set_panic_hook();
 
         let cells = (0..width * height).map(|_| 0).collect();
 
@@ -27,7 +30,7 @@ impl Canvas {
             width: width,
             height: height,
             cells: cells,
-            active_piece: Some(Piece::new(rand::random()).unwrap()),
+            active_piece: Some(Piece::new(PieceKind::TShape).unwrap()),
         }
     }
 
