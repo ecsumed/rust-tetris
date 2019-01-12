@@ -61,17 +61,46 @@ const drawCells = () => {
 };
 
 const getIndex = (row, column) => {
-  return row * WIDTH + column;
+    return row * WIDTH + column;
 };
 
-drawGrid();
-    
 const frame = Canvas.new(WIDTH, HEIGHT);
 
+const renderLoop = () => {
+    frame.tick();
 
+    drawGrid();
+    drawCells();
+
+    animationId = requestAnimationFrame(renderLoop);
+};
+
+canvas.addEventListener('keydown', function(event) {
+    switch (event.key) {
+        // Left pressed
+        case "ArrowLeft":
+
+        // Right pressed
+        case "ArrowRight":
+            break;
+
+        // Up pressed
+        case "ArrowUp":
+            break;
+
+        // Down pressed
+        case "ArrowDown":
+            frame.tick();
+
+            drawGrid();
+            drawCells();
+            break;
+    }
+});
+
+
+// renderLoop()
 frame.tick();
-frame.tick();
-frame.tick();
-frame.tick();
-frame.tick();
+
+drawGrid();
 drawCells();
