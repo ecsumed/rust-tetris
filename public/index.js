@@ -79,9 +79,18 @@ canvas.addEventListener('keydown', function(event) {
     switch (event.key) {
         // Left pressed
         case "ArrowLeft":
+            frame.piece_left();
+
+            drawGrid();
+            drawCells();
+            break;
 
         // Right pressed
         case "ArrowRight":
+            frame.piece_right();
+
+            drawGrid();
+            drawCells();
             break;
 
         // Up pressed

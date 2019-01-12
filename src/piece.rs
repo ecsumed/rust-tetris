@@ -68,12 +68,28 @@ impl Piece {
         self.blocks = self.blocks.iter().map(|b| Block{x: b.x, y: b.y + 1}).collect()
     }
     
-    fn right(&mut self) {
+    pub fn pre_right(&self) -> Vec<Block> {
+        self.blocks.iter().map(|b| Block{x: b.x + 1, y: b.y}).collect()
+    }
+    
+    pub fn right(&mut self) {
         self.blocks = self.blocks.iter().map(|b| Block{x: b.x + 1, y: b.y}).collect()
     }
     
-    fn left(&mut self) {
+    pub fn pre_left(&self) -> Vec<Block> {
+        self.blocks.iter().map(|b| Block{x: b.x - 1, y: b.y}).collect()
+    }
+    
+    pub fn left(&mut self) {
         self.blocks = self.blocks.iter().map(|b| Block{x: b.x - 1, y: b.y}).collect()
+    }
+    
+    pub fn pre_up(&self) -> Vec<Block> {
+        self.blocks.iter().map(|b| Block{x: b.x, y: b.y - 1}).collect()
+    }
+    
+    pub fn up(&mut self) {
+        self.blocks = self.blocks.iter().map(|b| Block{x: b.x, y: b.y - 1}).collect()
     }
 }
 

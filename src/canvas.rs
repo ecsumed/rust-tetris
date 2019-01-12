@@ -45,12 +45,33 @@ impl Canvas {
                 piece.drop();
             }
             
-            //piece.right();
-            //piece.right();
-            //piece.right();
-            //let floor_blocks = piece.get_floor_blocks();
-            //println!("{:?}", floor_blocks);
         }
+        self.piece_integrate();
+    }
+
+    pub fn piece_left(&mut self) {
+        self.piece_disintegrate();
+        let drop_piece = self.wont_collide(&self.active_piece.as_ref().unwrap().pre_left());  
+        if let Some(piece) = &mut self.active_piece {
+            //geometry::rotate_l(piece);
+            if drop_piece {
+                piece.left();
+            }
+        }
+		log!("blocks: {}", self.active_piece.as_ref().unwrap());
+        self.piece_integrate();
+    }
+    
+    pub fn piece_right(&mut self) {
+        self.piece_disintegrate();
+        let drop_piece = self.wont_collide(&self.active_piece.as_ref().unwrap().pre_right());  
+        if let Some(piece) = &mut self.active_piece {
+            //geometry::rotate_l(piece);
+            if drop_piece {
+                piece.right();
+            }
+        }
+		log!("blocks: {}", self.active_piece.as_ref().unwrap());
         self.piece_integrate();
     }
     
