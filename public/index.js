@@ -1,5 +1,5 @@
 import * as wasm from "tetris";
-import { Canvas, Piece, PieceKind } from "tetris";
+import { Canvas } from "tetris";
 import { memory } from "tetris/tetris_bg";
 
 const GRID_COLOR = "#CCCCCC";
@@ -62,9 +62,6 @@ drawGrid();
     
 const frame = Canvas.new(WIDTH, HEIGHT);
 
-const lp = Piece.new(PieceKind.TShape);
-
-frame.piece_add(lp);
 frame.tick();
 
 drawCells();

@@ -1,10 +1,13 @@
 use wasm_bindgen::prelude::*;
+
+//use utils;
 use std::fmt;
 
 use piece::Block;
 use piece::Piece;
 
-//#[wasm_bindgen]
+/// Public struct, exported to JavaScript.
+#[wasm_bindgen]
 pub struct Canvas {
     width: i32,
     height: i32,
@@ -12,8 +15,12 @@ pub struct Canvas {
     active_piece: Option<Piece>,
 }
 
+/// Public functions, exported to JavaScript.
+#[wasm_bindgen]
 impl Canvas {
     pub fn new(width: i32, height: i32) -> Canvas {
+		//utils::set_panic_hook();
+
         let cells = (0..width * height).map(|_| 0).collect();
 
         Canvas {
@@ -24,28 +31,6 @@ impl Canvas {
         }
     }
 
-    fn piece_integrate(&mut self) {
-        if let Some(piece) = &self.active_piece {
-            for block in piece.blocks.iter() {
-                let index = ((self.width * (block.y)) + (block.x)) as usize;
-                self.cells[index] = 1;
-            }
-        }
-    }
-    
-    fn piece_disintegrate(&mut self) {
-        if let Some(piece) = &self.active_piece {
-            for block in piece.blocks.iter() {
-                let index = ((self.width * (block.y)) + (block.x)) as usize;
-                self.cells[index] = 0;
-            }
-        }
-    }
-
-    pub fn piece_add(&mut self, piece: Piece) {
-        self.active_piece = Some(piece);
-    }
-    
     pub fn tick(&mut self) {
         self.piece_disintegrate();
    
@@ -66,6 +51,36 @@ impl Canvas {
         self.piece_integrate();
     }
     
+    pub fn cells(&self) -> *const u8 {
+        self.cells.as_ptr()
+    }
+}
+
+/// Private functions.
+impl Canvas {
+    fn piece_integrate(&mut self) {
+        if let Some(piece) = &self.active_piece {
+            for block in piece.blocks.iter() {
+                let index = ((self.width * (block.y)) + (block.x)) as usize;
+                self.cells[index] = 1;
+            }
+        }
+    }
+    
+    fn piece_disintegrate(&mut self) {
+        if let Some(piece) = &self.active_piece {
+            for block in piece.blocks.iter() {
+                let index = ((self.width * (block.y)) + (block.x)) as usize;
+                self.cells[index] = 0;
+            }
+        }
+    }
+    
+
+    pub fn piece_add(&mut self, piece: Piece) {
+        self.active_piece = Some(piece);
+    }
+
     fn wont_collide(&self, block: &Vec<Block>) -> bool {
         block.
         iter().
@@ -77,9 +92,6 @@ impl Canvas {
                 block.y < (self.height)
             }
         )
-    }
-    pub fn cells(&self) -> *const u8 {
-        self.cells.as_ptr()
     }
 }
 

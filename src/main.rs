@@ -5,8 +5,6 @@ extern crate rand;
 mod piece;
 mod canvas;
 
-use piece::Piece;
-use piece::PieceKind;
 use canvas::Canvas;
 
 fn main() {
