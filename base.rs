@@ -50,7 +50,7 @@ impl Piece {
         })
     }
 
-    fn pre_drop(&mut self) -> Vec<Block> {
+    fn pre_drop(&self) -> Vec<Block> {
         self.blocks.iter().map(|b| Block{x: b.x, y: b.y + 1}).collect()
     }
     
@@ -114,8 +114,6 @@ impl Canvas {
         if let Some(piece) = &self.active_piece {
             for block in piece.blocks.iter() {
                 let index = ((self.width * (block.y)) + (block.x)) as usize;
-                // println!("x: {}, y:{}", block.x, block.y);
-                // println!("index: {}", index);
                 self.cells[index] = 1;
             }
         }
@@ -136,19 +134,18 @@ impl Canvas {
     
     fn tick(&mut self) {
         self.piece_disintegrate();
-    
+   
+        let drop_piece = self.wont_collide(&self.active_piece.as_ref().unwrap().pre_drop());  
         if let Some(piece) = &mut self.active_piece {
             //geometry::rotate_l(piece);
             
-            if self.wont_collide(&piece.pre_drop()) {
+            if drop_piece {
                 piece.drop();
             }
             
-            piece.right();
-            piece.right();
-            piece.right();
-            piece.right();
-            piece.right();
+            //piece.right();
+            //piece.right();
+            //piece.right();
             //let floor_blocks = piece.get_floor_blocks();
             //println!("{:?}", floor_blocks);
         }
@@ -161,9 +158,9 @@ impl Canvas {
         all(
             |block| {
                 block.x >= 0 &&
-                block.x < (self.width - 1) &&
+                block.x < (self.width) &&
                 block.y >= 0 &&
-                block.y < (self.height - 1)
+                block.y < (self.height)
             }
         )
     }
