@@ -1,4 +1,6 @@
 import * as wasm from "tetris";
+import { Canvas, Piece, PieceKind } from "tetris";
+import { memory } from "tetris/tetris_bg";
 
 const GRID_COLOR = "#CCCCCC";
 const CELL_SIZE = 25; // px
@@ -30,4 +32,39 @@ const drawGrid = () => {
   ctx.stroke();
 };
 
+const drawCells = () => {
+  const cellsPtr = frame.cells();
+  const cells = new Uint8Array(memory.buffer, cellsPtr, WIDTH * HEIGHT);
+
+  ctx.beginPath();
+
+  for (let row = 0; row < height; row++) {
+    for (let col = 0; col < width; col++) {
+      const idx = getIndex(row, col);
+
+      ctx.fillStyle = cells[idx] === 0
+        ? DEAD_COLOR
+        : ALIVE_COLOR;
+
+      ctx.fillRect(
+        col * (CELL_SIZE + 1) + 1,
+        row * (CELL_SIZE + 1) + 1,
+        CELL_SIZE,
+        CELL_SIZE
+      );
+    }
+  }
+
+  ctx.stroke();
+};
+
 drawGrid();
+    
+const frame = Canvas.new(WIDTH, HEIGHT);
+
+const lp = Piece.new(PieceKind.TShape);
+
+frame.piece_add(lp);
+frame.tick();
+
+drawCells();
