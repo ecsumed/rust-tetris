@@ -43,7 +43,6 @@ impl Canvas {
             self.piece_active_integrate();
         }
             
-        log!("piece {}", self.active_piece);
     }
 
     pub fn piece_left(&mut self) {
