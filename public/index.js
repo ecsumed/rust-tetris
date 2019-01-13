@@ -75,7 +75,7 @@ const renderLoop = () => {
     animationId = requestAnimationFrame(renderLoop);
 };
 
-canvas.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', function(event) {
     switch (event.key) {
         // Left pressed
         case "ArrowLeft":

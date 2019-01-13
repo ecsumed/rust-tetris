@@ -5,7 +5,6 @@ use std::fmt;
 
 use piece::Block;
 use piece::Piece;
-use piece::PieceKind;
 
 /// Public struct, exported to JavaScript.
 #[wasm_bindgen]
@@ -20,8 +19,6 @@ pub struct Canvas {
 #[wasm_bindgen]
 impl Canvas {
     pub fn new(width: i32, height: i32) -> Canvas {
-		// log!("width: {}, height: {}", width, height);
-
 		utils::set_panic_hook();
 
         let cells = (0..width * height).map(|_| 0).collect();
@@ -30,19 +27,23 @@ impl Canvas {
             width: width,
             height: height,
             cells: cells,
-            active_piece: Piece::new(PieceKind::SShape),
+            active_piece: Piece::new(rand::random()),
         }
     }
 
     pub fn tick(&mut self) {
-        self.piece_disintegrate();
         if self.wont_collide(&self.active_piece.pre_drop()) {
+            self.piece_disintegrate();
             self.active_piece.drop();
+            self.piece_active_integrate();
         } else {
-            self.piece_add(Piece::new(PieceKind::SShape));
+            self.piece_disintegrate();
+            self.piece_integrate();
+            self.piece_add(Piece::new(rand::random()));
+            self.piece_active_integrate();
         }
             
-        self.piece_integrate();
+        log!("piece {}", self.active_piece);
     }
 
     pub fn piece_left(&mut self) {
@@ -50,7 +51,7 @@ impl Canvas {
         if self.wont_collide(&self.active_piece.pre_left()) {
             self.active_piece.left();
         }
-        self.piece_integrate();
+        self.piece_active_integrate();
     }
     
     pub fn piece_right(&mut self) {
@@ -58,7 +59,7 @@ impl Canvas {
         if self.wont_collide(&self.active_piece.pre_right()) {
             self.active_piece.right();
         }
-        self.piece_integrate();
+        self.piece_active_integrate();
     }
 
     pub fn piece_rotate_clockwise(&mut self) {
@@ -66,7 +67,7 @@ impl Canvas {
         if self.wont_collide(&self.active_piece.pre_rotate_right()) {
             self.active_piece.rotate_right();
         }
-        self.piece_integrate();
+        self.piece_active_integrate();
     }
     
     pub fn cells(&self) -> *const u8 {
@@ -80,6 +81,13 @@ impl Canvas {
         for block in self.active_piece.blocks.iter() {
             let index = ((self.width * (block.y)) + (block.x)) as usize;
             self.cells[index] = 1;
+        }
+    }
+    
+    fn piece_active_integrate(&mut self) {
+        for block in self.active_piece.blocks.iter() {
+            let index = ((self.width * (block.y)) + (block.x)) as usize;
+            self.cells[index] = 2;
         }
     }
     
@@ -102,9 +110,15 @@ impl Canvas {
                 block.x >= 0 &&
                 block.x < (self.width) &&
                 block.y >= 0 &&
-                block.y < (self.height)
+                block.y < (self.height) &&
+                (self.cells[self.get_index(&block)] == 0 ||
+                self.cells[self.get_index(&block)] == 2)
             }
         )
+    }
+
+    fn get_index(&self, block: &Block) -> usize {
+        ((self.width * block.y) + block.x) as usize
     }
 }
 
