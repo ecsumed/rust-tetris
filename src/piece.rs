@@ -47,18 +47,18 @@ pub struct Piece {
 }
 
 impl Piece {
-    pub fn new(kind: PieceKind) -> Result<Piece, &'static str> {
+    pub fn new(kind: PieceKind) -> Piece {
         let blocks = match kind {
             PieceKind::Long => [(0, 1), (0, 0), (0, 2), (0, 3)],
             PieceKind::TShape => [(0, 1), (0, 0), (1, 1), (0, 2)],
             PieceKind::LShape => [(0, 1), (0, 0), (0, 2), (1, 2)],
             PieceKind::RLShape => [(1, 1), (1, 0), (1, 2), (0, 2)],
-            PieceKind::SShape => [(1, 1), (0, 1), (0, 0), (1, 2)],
+            PieceKind::SShape => [(1, 1), (0, 0), (0, 1), (1, 2)],
             PieceKind::RSShape => [(1, 1), (1, 0), (0, 1), (0, 2)],
         };
-        Ok(Piece {
+        Piece {
             blocks: blocks.iter().map(|x| Block { x: x.0, y: x.1 }).collect(),
-        })
+        }
     }
 
     pub fn pre_drop(&self) -> Vec<Block> {
