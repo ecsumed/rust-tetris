@@ -1,17 +1,22 @@
-#![allow(dead_code)]
-extern crate wasm_bindgen;
-extern crate rand;
+#[macro_use]
+extern crate stdweb;
 
-mod piece;
 mod canvas;
 
 use canvas::Canvas;
 
 fn main() {
-    let mut frame = Canvas::new(10, 20);
-    
-    frame.tick();
+    let grid_color = "#CCCCCC";
+    let block_color = "#5CB3FF";
+    let grid_width = 10;
+    let grid_height = 21;
+    let grid_spacing = 20;
 
-    println!("{}", frame);
+    stdweb::initialize();
+
+    let canvas = Canvas::new("#canvas", grid_width, grid_height);
+
+    canvas.draw_grid(grid_spacing, grid_color);
+
+	stdweb::event_loop();
 }
-

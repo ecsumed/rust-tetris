@@ -1,135 +1,71 @@
-use wasm_bindgen::prelude::*;
+use stdweb::traits::*;
+use stdweb::unstable::TryInto;
+use stdweb::web::html_element::CanvasElement;
+use stdweb::web::{document, CanvasRenderingContext2d};
 
-use utils;
-use std::fmt;
-
-use piece::Block;
-use piece::Piece;
-
-/// Public struct, exported to JavaScript.
-#[wasm_bindgen]
 pub struct Canvas {
-    width: i32,
-    height: i32,
-    cells: Vec<u8>,
-    active_piece: Piece,
+    pub canvas: CanvasElement,
+    pub ctx: CanvasRenderingContext2d,
+    width: u32,
+    height: u32,
 }
 
-/// Public functions, exported to JavaScript.
-#[wasm_bindgen]
 impl Canvas {
-    pub fn new(width: i32, height: i32) -> Canvas {
-		utils::set_panic_hook();
 
-        let cells = (0..width * height).map(|_| 0).collect();
+    pub fn new(attr_id: &str, width: u32, height: u32) -> Canvas {
+        let canvas: CanvasElement = document()
+            .query_selector(attr_id)
+            .unwrap()
+            .unwrap()
+            .try_into()
+            .unwrap();
+
+        let ctx: CanvasRenderingContext2d = canvas.get_context().unwrap();
 
         Canvas {
-            width: width,
-            height: height,
-            cells: cells,
-            active_piece: Piece::new(rand::random()),
+            canvas,
+            ctx,
+            width,
+            height,
         }
     }
 
-    pub fn tick(&mut self) {
-        if self.wont_collide(&self.active_piece.pre_drop()) {
-            self.piece_disintegrate();
-            self.active_piece.drop();
-            self.piece_active_integrate();
-        } else {
-            self.piece_disintegrate();
-            self.piece_integrate();
-            self.piece_add(Piece::new(rand::random()));
-            self.piece_active_integrate();
-        }
-            
+    pub fn draw_grid(&self, cell_size: i32, color: &str) {
+
+      self.ctx.begin_path();
+      self.canvas.set_width((cell_size as u32 + 1) * self.width + 1); 
+      self.canvas.set_height((cell_size as u32 + 1) * self.height + 1);
+
+      // Vertical lines.
+      for i in 0..self.width + 1 {
+        let new_x = (i as i32 * (cell_size + 1) + 1) as f64;
+        self.ctx.move_to(new_x, 0_f64);
+
+        let new_y = ((cell_size + 1) * self.height as i32 + 1) as f64;
+        self.ctx.line_to(new_x, new_y);
+      }
+
+      // Horizontal lines.
+      for j in 0..self.height + 1 {
+        let new_y = (j as i32 * (cell_size + 1) + 1) as f64;
+        self.ctx.move_to(0_f64, new_y);
+
+
+        let new_x = ((cell_size + 1) * self.width as i32 + 1) as f64;
+        self.ctx.line_to(new_x, new_y);
+      }
+
+      self.ctx.set_stroke_style_color(color);
+      self.ctx.stroke();
     }
 
-    pub fn piece_left(&mut self) {
-        self.piece_disintegrate();
-        if self.wont_collide(&self.active_piece.pre_left()) {
-            self.active_piece.left();
-        }
-        self.piece_active_integrate();
-    }
-    
-    pub fn piece_right(&mut self) {
-        self.piece_disintegrate();
-        if self.wont_collide(&self.active_piece.pre_right()) {
-            self.active_piece.right();
-        }
-        self.piece_active_integrate();
-    }
-
-    pub fn piece_rotate_clockwise(&mut self) {
-        self.piece_disintegrate();
-        if self.wont_collide(&self.active_piece.pre_rotate_right()) {
-            self.active_piece.rotate_right();
-        }
-        self.piece_active_integrate();
-    }
-    
-    pub fn cells(&self) -> *const u8 {
-        self.cells.as_ptr()
-    }
-}
-
-/// Private functions.
-impl Canvas {
-    fn piece_integrate(&mut self) {
-        for block in self.active_piece.blocks.iter() {
-            let index = ((self.width * (block.y)) + (block.x)) as usize;
-            self.cells[index] = 1;
-        }
-    }
-    
-    fn piece_active_integrate(&mut self) {
-        for block in self.active_piece.blocks.iter() {
-            let index = ((self.width * (block.y)) + (block.x)) as usize;
-            self.cells[index] = 2;
-        }
-    }
-    
-    fn piece_disintegrate(&mut self) {
-        for block in self.active_piece.blocks.iter() {
-            let index = ((self.width * (block.y)) + (block.x)) as usize;
-            self.cells[index] = 0;
-        }
-    }
-    
-    fn piece_add(&mut self, piece: Piece) {
-        self.active_piece = piece;
-    }
-
-    fn wont_collide(&self, block: &Vec<Block>) -> bool {
-        block.
-        iter().
-        all(
-            |block| {
-                block.x >= 0 &&
-                block.x < (self.width) &&
-                block.y >= 0 &&
-                block.y < (self.height) &&
-                (self.cells[self.get_index(&block)] == 0 ||
-                self.cells[self.get_index(&block)] == 2)
-            }
-        )
-    }
-
-    fn get_index(&self, block: &Block) -> usize {
-        ((self.width * block.y) + block.x) as usize
-    }
-}
-
-impl fmt::Display for Canvas {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        for line in self.cells.as_slice().chunks(self.width as usize) {
-            for &cell in line {
-                let symbol = if cell == 0 { '◻' } else { '◼' };
-                write!(f, "{}", symbol)?;
-            }
-            write!(f, "\n")?;
-        }
-        Ok(())
+    pub fn clear_all(&self) {
+        self.ctx.set_fill_style_color("white");
+        self.ctx.fill_rect(
+            0.0,
+            0.0,
+            f64::from(self.canvas.width()),
+            f64::from(self.canvas.height()),
+        );
     }
 }
