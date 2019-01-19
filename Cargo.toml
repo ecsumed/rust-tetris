@@ -5,11 +5,3 @@ authors = ["Fahad Saleh <ecsumed@yahoo.com>"]
 
 [dependencies]
 stdweb = "0.4.7"
-# rand = "0.6"
-
-# [dependencies.rand]
-# git = "https://github.com/rust-random/rand"
-# features = [
-#   "wasm-bindgen",
-# ]
-

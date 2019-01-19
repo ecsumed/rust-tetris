@@ -1,9 +1,16 @@
+#![allow(dead_code)]
+#![allow(unused_imports)]
+
 #[macro_use]
 extern crate stdweb;
 
+mod geometry;
+mod piece;
 mod canvas;
+mod tetris;
 
 use canvas::Canvas;
+use tetris::Tetris;
 
 fn main() {
     let grid_color = "#CCCCCC";
@@ -14,9 +21,16 @@ fn main() {
 
     stdweb::initialize();
 
-    let canvas = Canvas::new("#canvas", grid_width, grid_height);
+    let mut tetris = Tetris::new(grid_width, grid_height); 
+    let canvas = Canvas::new("#canvas", grid_width, grid_height, grid_spacing);
 
-    canvas.draw_grid(grid_spacing, grid_color);
+    canvas.clear();
+    canvas.draw_grid(grid_color);
+    canvas.draw_block(1, 1, block_color);
+
+    tetris.tick();
+	tetris.draw(canvas, block_color);
+    // stdweb::console!(log, format!("{}", tetris));
 
 	stdweb::event_loop();
 }

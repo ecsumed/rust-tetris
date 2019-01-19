@@ -1,11 +1,6 @@
 use std::fmt;
 use geometry;
 
-use rand::{
-    distributions::{Distribution, Standard},
-    Rng,
-};
-
 #[derive(Debug)]
 pub struct Block {
     pub x: i32,
@@ -30,18 +25,6 @@ pub enum PieceKind {
     RSShape,    //reversed 'S' shape
 }
 
-impl Distribution<PieceKind> for Standard {
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> PieceKind {
-        match rng.gen_range(0, 5) {
-            0 => PieceKind::Long,
-            1 => PieceKind::TShape,
-            2 => PieceKind::LShape,
-            3 => PieceKind::RLShape,
-            4 => PieceKind::SShape,
-            _ => PieceKind::RSShape,
-        }
-    }
-}
 pub struct Piece {
     pub blocks: Vec<Block>,
 }
