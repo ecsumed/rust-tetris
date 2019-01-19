@@ -5,6 +5,7 @@ use piece::Piece;
 use piece::PieceKind;
 use canvas::Canvas;
 
+#[derive(Clone)]
 pub struct Tetris {
     width: i32,
     height: i32,
@@ -113,7 +114,7 @@ impl Tetris {
         ((self.width * block.y) + block.x) as usize
     }
 
-    pub fn draw(&self, canvas: Canvas, block_color: &str) {
+    pub fn draw(&self, canvas: &Canvas, block_color: &str) {
         for col in 0..self.width {
             for row in 0..self.height {
                 let idx = self.get_index(&Block{x: col, y: row});

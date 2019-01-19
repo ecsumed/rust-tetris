@@ -1,7 +1,7 @@
 use std::fmt;
 use geometry;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Block {
     pub x: i32,
     pub y: i32,
@@ -25,6 +25,7 @@ pub enum PieceKind {
     RSShape,    //reversed 'S' shape
 }
 
+#[derive(Clone)]
 pub struct Piece {
     pub blocks: Vec<Block>,
 }
