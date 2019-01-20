@@ -1,6 +1,9 @@
 use std::fmt;
 use geometry;
 
+use stdweb::js;
+use stdweb::unstable::TryInto;
+
 #[derive(Debug, Clone)]
 pub struct Block {
     pub x: i32,
@@ -25,6 +28,29 @@ pub enum PieceKind {
     RSShape,    //reversed 'S' shape
 }
 
+impl PieceKind {
+    pub fn random() -> PieceKind {
+        let num = PieceKind::random_int(6).try_into().unwrap();
+
+        match num {
+            0 => PieceKind::Long,   
+            1 => PieceKind::TShape, 
+            2 => PieceKind::LShape, 
+            3 => PieceKind::RLShape,
+            4 => PieceKind::SShape, 
+            5 => PieceKind::RSShape,
+            _ => PieceKind::TShape, 
+        }
+    }
+
+    fn random_int(max: i32) -> stdweb::Value {
+      let val = js! {
+          return Math.floor(Math.random() * Math.floor(@{max}));
+      };
+      return val
+    }
+}
+
 #[derive(Clone)]
 pub struct Piece {
     pub blocks: Vec<Block>,
@@ -40,11 +66,12 @@ impl Piece {
             PieceKind::SShape => [(1, 1), (0, 0), (0, 1), (1, 2)],
             PieceKind::RSShape => [(1, 1), (1, 0), (0, 1), (0, 2)],
         };
+
         Piece {
             blocks: blocks.iter().map(|x| Block { x: x.0, y: x.1 }).collect(),
         }
     }
-
+    
     pub fn pre_drop(&self) -> Vec<Block> {
         self.blocks.iter().map(|b| Block{x: b.x, y: b.y + 1}).collect()
     }

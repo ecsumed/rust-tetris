@@ -5,6 +5,7 @@ use piece::Piece;
 use piece::PieceKind;
 use canvas::Canvas;
 
+
 #[derive(Clone)]
 pub struct Tetris {
     width: i32,
@@ -21,7 +22,7 @@ impl Tetris {
             width: width,
             height: height,
             cells: cells,
-            active_piece: Piece::new(PieceKind::TShape),
+            active_piece: Piece::new(PieceKind::random()),
         }
     }
 
@@ -31,7 +32,7 @@ impl Tetris {
             self.active_piece.drop();
         } else {
             self.piece_integrate();
-            self.piece_add(Piece::new(PieceKind::TShape));
+            self.piece_add(Piece::new(PieceKind::random()));
             self.remove_full_rows();
         }
         self.piece_active_integrate();

@@ -75,7 +75,8 @@ fn main() {
         )
     }
 
-    let game_timer = Rc::new(RefCell::new(Some(game_loop(tetris, canvas.clone(), interval))));
+    game_loop(tetris, canvas.clone(), interval);
+    // let game_timer = Rc::new(RefCell::new(Some(game_loop(tetris, canvas.clone(), interval))));
 	
     // fn is_paused<T> (game_timer: Option<T>) -> bool {
     //     match game_timer {
