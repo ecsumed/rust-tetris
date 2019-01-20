@@ -46,9 +46,10 @@ impl Tetris {
                 let start = self.width as usize * row;
                 let end = start + self.width as usize;
                 temp.drain(start..end);
-                //stdweb::console!(log, "remove row ", format!("{} {:?}", row, end));
+                temp.splice(..0, (0..10).map(|_| 0 ));
             }
         } 
+        self.cells = temp;
     }
 
     pub fn piece_left(&mut self) {

@@ -77,32 +77,32 @@ fn main() {
 
     let game_timer = Rc::new(RefCell::new(Some(game_loop(tetris, canvas.clone(), interval))));
 	
-    fn is_paused<T> (game_timer: Option<T>) -> bool {
-        match game_timer {
-            Some(_) => true,
-            None => false
-        }
-    }
+    // fn is_paused<T> (game_timer: Option<T>) -> bool {
+    //     match game_timer {
+    //         Some(_) => true,
+    //         None => false
+    //     }
+    // }
 
-	fn play() {
-		unimplemented!();
-	}
-	
-	fn pause() {
-		unimplemented!();
-	}
+	// fn play() {
+	// 	unimplemented!();
+	// }
+	// 
+	// fn pause() {
+	// 	unimplemented!();
+	// }
 
-	let button = stdweb::web::document().query_selector( "#play-pause" ).unwrap().unwrap();
+	// let button = stdweb::web::document().query_selector( "#play-pause" ).unwrap().unwrap();
 
-	button.add_event_listener(
-        let game_timer = game_timer.clone();
-        move |_: ClickEvent| {
-        if is_paused() {
-            play();
-        } else {
-            pause();
-        }
-	});
+	// button.add_event_listener(
+    //     let game_timer = game_timer.clone();
+    //     move |_: ClickEvent| {
+    //     if is_paused() {
+    //         play();
+    //     } else {
+    //         pause();
+    //     }
+	// });
 
 
 	stdweb::event_loop();
