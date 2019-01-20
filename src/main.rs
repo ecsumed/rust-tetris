@@ -13,7 +13,11 @@ use canvas::Canvas;
 use tetris::Tetris;
 
 use stdweb::traits::*;
-use stdweb::web::{event::KeyDownEvent, IEventTarget};
+use stdweb::web::{
+	event::KeyDownEvent,
+	event::ClickEvent,
+	IEventTarget
+};
 
 use std::rc::Rc;
 use std::cell::RefCell;
@@ -63,14 +67,43 @@ fn main() {
         stdweb::web::set_timeout(
             move || {
                 game_loop(tetris.clone(), canvas.clone(), time);
-                tetris.borrow_mut().tick();
                 tetris.borrow().draw(&canvas.borrow(), "#5CB3FF");
+                tetris.borrow_mut().tick();
+                // stdweb::console!(log, format!("{}", tetris.borrow()));
             },
             time,
-        );
+        )
     }
 
-    game_loop(tetris, canvas.clone(), interval);
+    let game_timer = Rc::new(RefCell::new(Some(game_loop(tetris, canvas.clone(), interval))));
+	
+    fn is_paused<T> (game_timer: Option<T>) -> bool {
+        match game_timer {
+            Some(_) => true,
+            None => false
+        }
+    }
+
+	fn play() {
+		unimplemented!();
+	}
+	
+	fn pause() {
+		unimplemented!();
+	}
+
+	let button = stdweb::web::document().query_selector( "#play-pause" ).unwrap().unwrap();
+
+	button.add_event_listener(
+        let game_timer = game_timer.clone();
+        move |_: ClickEvent| {
+        if is_paused() {
+            play();
+        } else {
+            pause();
+        }
+	});
+
 
 	stdweb::event_loop();
 }

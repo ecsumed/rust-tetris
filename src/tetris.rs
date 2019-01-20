@@ -26,17 +26,29 @@ impl Tetris {
     }
 
     pub fn tick(&mut self) {
+        self.piece_disintegrate();
         if self.wont_collide(&self.active_piece.pre_drop()) {
-            self.piece_disintegrate();
             self.active_piece.drop();
-            self.piece_active_integrate();
         } else {
-            self.piece_disintegrate();
             self.piece_integrate();
             self.piece_add(Piece::new(PieceKind::TShape));
-            self.piece_active_integrate();
+            self.remove_full_rows();
         }
+        self.piece_active_integrate();
             
+    }
+
+    fn remove_full_rows(&mut self) {
+        let mut temp = self.cells.clone();
+        for (row, cells) in self.cells.chunks(self.width as usize).enumerate() {
+            //stdweb::console!(log, "row ", format!("{} {:?}", row, cells));
+            if cells.iter().all(|&x| x == 1) {
+                let start = self.width as usize * row;
+                let end = start + self.width as usize;
+                temp.drain(start..end);
+                //stdweb::console!(log, "remove row ", format!("{} {:?}", row, end));
+            }
+        } 
     }
 
     pub fn piece_left(&mut self) {
