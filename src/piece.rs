@@ -25,12 +25,13 @@ pub enum PieceKind {
     LShape,     // 'L' shape
     RLShape,    // reversed 'L' shape
     SShape,     // 'S' shape
-    RSShape,    //reversed 'S' shape
+    RSShape,    // reversed 'S' shape
+    BShape,     // Box shape
 }
 
 impl PieceKind {
     pub fn random() -> PieceKind {
-        let num = PieceKind::random_int(6).try_into().unwrap();
+        let num = PieceKind::random_int(7).try_into().unwrap();
 
         match num {
             0 => PieceKind::Long,   
@@ -39,6 +40,7 @@ impl PieceKind {
             3 => PieceKind::RLShape,
             4 => PieceKind::SShape, 
             5 => PieceKind::RSShape,
+            6 => PieceKind::BShape,
             _ => PieceKind::TShape, 
         }
     }
@@ -65,6 +67,7 @@ impl Piece {
             PieceKind::RLShape => [(1, 1), (1, 0), (1, 2), (0, 2)],
             PieceKind::SShape => [(1, 1), (0, 0), (0, 1), (1, 2)],
             PieceKind::RSShape => [(1, 1), (1, 0), (0, 1), (0, 2)],
+            PieceKind::BShape => [(0, 0), (0, 1), (1, 0), (1, 1)],
         };
 
         Piece {

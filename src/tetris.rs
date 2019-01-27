@@ -31,9 +31,14 @@ impl Tetris {
         if self.wont_collide(&self.active_piece.pre_drop()) {
             self.active_piece.drop();
         } else {
-            self.piece_integrate();
+            if self.at_top(&self.active_piece.blocks) {
+                // reset grid, game over
+                self.cells = (0..self.width * self.height).map(|_| 0).collect();
+            } else {
+                self.piece_integrate();
+                self.remove_full_rows();
+            }
             self.piece_add(Piece::new(PieceKind::random()));
-            self.remove_full_rows();
         }
         self.piece_active_integrate();
             
@@ -122,6 +127,12 @@ impl Tetris {
                 self.cells[self.get_index(&block)] == 2)
             }
         )
+    }
+    
+    fn at_top(&self, blocks: &Vec<Block>) -> bool {
+        blocks
+        .iter()
+        .any(|block| block.y == 0)
     }
 
     fn get_index(&self, block: &Block) -> usize {
