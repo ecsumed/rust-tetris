@@ -14,6 +14,7 @@ pub struct Tetris {
     active_piece: Piece,
 }
 
+// Public functions
 impl Tetris {
     pub fn new(width: i32, height: i32) -> Tetris {
         let cells = (0..width * height).map(|_| 0).collect();
@@ -44,20 +45,6 @@ impl Tetris {
             
     }
 
-    fn remove_full_rows(&mut self) {
-        let mut temp = self.cells.clone();
-        for (row, cells) in self.cells.chunks(self.width as usize).enumerate() {
-            //stdweb::console!(log, "row ", format!("{} {:?}", row, cells));
-            if cells.iter().all(|&x| x == 1) {
-                let start = self.width as usize * row;
-                let end = start + self.width as usize;
-                temp.drain(start..end);
-                temp.splice(..0, (0..10).map(|_| 0 ));
-            }
-        } 
-        self.cells = temp;
-    }
-
     pub fn piece_left(&mut self) {
         self.piece_disintegrate();
         if self.wont_collide(&self.active_piece.pre_left()) {
@@ -81,13 +68,26 @@ impl Tetris {
         }
         self.piece_active_integrate();
     }
-    
-    pub fn cells(&self) -> *const u8 {
-        self.cells.as_ptr()
+
+    pub fn draw(&self, canvas: &Canvas, block_color: &str) {
+        for col in 0..self.width {
+            for row in 0..self.height {
+                let idx = self.get_index(&Block{x: col, y: row});
+
+                let cell_color = match self.cells[idx] {
+                    0 => "white",
+                    _ => block_color,
+                };
+
+                canvas.draw_block(col as u32, row as u32, cell_color);
+            }
+        }
+
     }
+    
 }
 
-/// Private functions.
+// Private functions.
 impl Tetris {
     fn piece_integrate(&mut self) {
         for block in self.active_piece.blocks.iter() {
@@ -139,20 +139,22 @@ impl Tetris {
         ((self.width * block.y) + block.x) as usize
     }
 
-    pub fn draw(&self, canvas: &Canvas, block_color: &str) {
-        for col in 0..self.width {
-            for row in 0..self.height {
-                let idx = self.get_index(&Block{x: col, y: row});
-
-                let cell_color = match self.cells[idx] {
-                    0 => "white",
-                    _ => block_color,
-                };
-
-                canvas.draw_block(col as u32, row as u32, cell_color);
+    fn remove_full_rows(&mut self) {
+        let mut temp = self.cells.clone();
+        for (row, cells) in self.cells.chunks(self.width as usize).enumerate() {
+            //stdweb::console!(log, "row ", format!("{} {:?}", row, cells));
+            if cells.iter().all(|&x| x == 1) {
+                let start = self.width as usize * row;
+                let end = start + self.width as usize;
+                temp.drain(start..end);
+                temp.splice(..0, (0..10).map(|_| 0 ));
             }
-        }
-
+        } 
+        self.cells = temp;
+    }
+    
+    fn cells(&self) -> *const u8 {
+        self.cells.as_ptr()
     }
 }
 

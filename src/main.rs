@@ -1,5 +1,4 @@
 #![allow(dead_code)]
-#![allow(unused_imports)]
 
 #[macro_use]
 extern crate stdweb;
@@ -15,7 +14,6 @@ use tetris::Tetris;
 use stdweb::traits::*;
 use stdweb::web::{
 	event::KeyDownEvent,
-	event::ClickEvent,
 	IEventTarget
 };
 
@@ -23,8 +21,6 @@ use std::rc::Rc;
 use std::cell::RefCell;
 
 fn main() {
-    // let grid_color = "#CCCCCC";
-    // let block_color = "#5CB3FF";
     let grid_width = 10;
     let grid_height = 21;
     let grid_spacing = 20;
@@ -76,6 +72,7 @@ fn main() {
     }
 
     game_loop(tetris, canvas.clone(), interval);
+
     // let game_timer = Rc::new(RefCell::new(Some(game_loop(tetris, canvas.clone(), interval))));
 	
     // fn is_paused<T> (game_timer: Option<T>) -> bool {
