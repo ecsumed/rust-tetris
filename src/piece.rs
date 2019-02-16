@@ -19,6 +19,7 @@ impl Block {
     }
 }
 
+#[derive(Clone)]
 pub enum PieceKind {
     Long,    // Long 'I' shape
     TShape,  // 'T' shape
@@ -56,6 +57,7 @@ impl PieceKind {
 #[derive(Clone)]
 pub struct Piece {
     pub blocks: Vec<Block>,
+    pub kind: PieceKind,
 }
 
 impl Piece {
@@ -72,6 +74,7 @@ impl Piece {
 
         Piece {
             blocks: blocks.iter().map(|x| Block { x: x.0, y: x.1 }).collect(),
+            kind: kind,
         }
     }
 
@@ -157,6 +160,7 @@ impl Piece {
                 .iter()
                 .map(|point| geometry::rotate_point(&point, angle))
                 .collect(),
+            kind: piece.kind.clone(),
         }
     }
 
@@ -167,6 +171,7 @@ impl Piece {
                 .iter()
                 .map(|point| geometry::transpose_point(&point, center))
                 .collect(),
+            kind: piece.kind.clone(),
         }
     }
 }

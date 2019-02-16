@@ -40,19 +40,19 @@ fn main() {
             match event.key().as_ref() {
                 "ArrowLeft" => {
                     tetris.borrow_mut().piece_left();
-                    tetris.borrow().draw(&canvas.borrow(), "#5CB3FF");
+                    tetris.borrow().draw(&canvas.borrow());
                 }
                 "ArrowRight" => {
                     tetris.borrow_mut().piece_right();
-                    tetris.borrow().draw(&canvas.borrow(), "#5CB3FF");
+                    tetris.borrow().draw(&canvas.borrow());
                 }
                 "ArrowDown" => {
                     tetris.borrow_mut().tick();
-                    tetris.borrow().draw(&canvas.borrow(), "#5CB3FF");
+                    tetris.borrow().draw(&canvas.borrow());
                 }
                 "ArrowUp" => {
                     tetris.borrow_mut().piece_rotate_clockwise();
-                    tetris.borrow().draw(&canvas.borrow(), "#5CB3FF");
+                    tetris.borrow().draw(&canvas.borrow());
                 }
                 _ => {}
             };
@@ -65,7 +65,7 @@ fn main() {
         stdweb::web::set_timeout(
             move || {
                 game_loop(tetris.clone(), canvas.clone(), time);
-                tetris.borrow().draw(&canvas.borrow(), "#5CB3FF");
+                tetris.borrow().draw(&canvas.borrow());
                 tetris.borrow_mut().tick();
                 // stdweb::console!(log, format!("{}", tetris.borrow()));
             },

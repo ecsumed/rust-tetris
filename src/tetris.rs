@@ -67,14 +67,22 @@ impl Tetris {
         self.piece_active_integrate();
     }
 
-    pub fn draw(&self, canvas: &Canvas, block_color: &str) {
+    pub fn draw(&self, canvas: &Canvas) {
         for col in 0..self.width {
             for row in 0..self.height {
                 let idx = self.get_index(&Block { x: col, y: row });
 
                 let cell_color = match self.cells[idx] {
                     0 => "white",
-                    _ => block_color,
+                    1 => "#5C7D87",
+                    2 => "#29A49A",
+                    3 => "#BC2A5D",
+                    4 => "#E48537",
+                    5 => "#ef3636",
+                    6 => "#9f25c8",
+                    7 => "#8BD03E",
+                    8 => "#5CB3FF",
+                    _ => "black",
                 };
 
                 canvas.draw_block(col as u32, row as u32, cell_color);
@@ -88,14 +96,23 @@ impl Tetris {
     fn piece_integrate(&mut self) {
         for block in self.active_piece.blocks.iter() {
             let index = ((self.width * (block.y)) + (block.x)) as usize;
-            self.cells[index] = 1;
+            let p_type = match self.active_piece.kind {
+                PieceKind::Long => 1,
+                PieceKind::TShape => 2,
+                PieceKind::LShape => 3,
+                PieceKind::RLShape => 4,
+                PieceKind::SShape => 5,
+                PieceKind::RSShape => 6,
+                PieceKind::BShape => 7,
+            };
+            self.cells[index] = p_type;
         }
     }
 
     fn piece_active_integrate(&mut self) {
         for block in self.active_piece.blocks.iter() {
             let index = ((self.width * (block.y)) + (block.x)) as usize;
-            self.cells[index] = 2;
+            self.cells[index] = 8; // 0 for no block + 7 enum types = 8 for active block
         }
     }
 
@@ -117,7 +134,7 @@ impl Tetris {
                 && block.y >= 0
                 && block.y < (self.height)
                 && (self.cells[self.get_index(&block)] == 0
-                    || self.cells[self.get_index(&block)] == 2)
+                    || self.cells[self.get_index(&block)] == 8)
         })
     }
 
@@ -132,8 +149,7 @@ impl Tetris {
     fn remove_full_rows(&mut self) {
         let mut temp = self.cells.clone();
         for (row, cells) in self.cells.chunks(self.width as usize).enumerate() {
-            //stdweb::console!(log, "row ", format!("{} {:?}", row, cells));
-            if cells.iter().all(|&x| x == 1) {
+            if cells.iter().all(|&x| (x >= 1 && x <= 7)) {
                 let start = self.width as usize * row;
                 let end = start + self.width as usize;
                 temp.drain(start..end);
