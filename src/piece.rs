@@ -1,5 +1,5 @@
-use std::fmt;
 use geometry;
+use std::fmt;
 
 use stdweb::js;
 use stdweb::unstable::TryInto;
@@ -20,13 +20,13 @@ impl Block {
 }
 
 pub enum PieceKind {
-    Long,       // Long 'I' shape
-    TShape,     // 'T' shape
-    LShape,     // 'L' shape
-    RLShape,    // reversed 'L' shape
-    SShape,     // 'S' shape
-    RSShape,    // reversed 'S' shape
-    BShape,     // Box shape
+    Long,    // Long 'I' shape
+    TShape,  // 'T' shape
+    LShape,  // 'L' shape
+    RLShape, // reversed 'L' shape
+    SShape,  // 'S' shape
+    RSShape, // reversed 'S' shape
+    BShape,  // Box shape
 }
 
 impl PieceKind {
@@ -34,22 +34,22 @@ impl PieceKind {
         let num = PieceKind::random_int(7).try_into().unwrap();
 
         match num {
-            0 => PieceKind::Long,   
-            1 => PieceKind::TShape, 
-            2 => PieceKind::LShape, 
+            0 => PieceKind::Long,
+            1 => PieceKind::TShape,
+            2 => PieceKind::LShape,
             3 => PieceKind::RLShape,
-            4 => PieceKind::SShape, 
+            4 => PieceKind::SShape,
             5 => PieceKind::RSShape,
             6 => PieceKind::BShape,
-            _ => PieceKind::TShape, 
+            _ => PieceKind::TShape,
         }
     }
 
     fn random_int(max: i32) -> stdweb::Value {
-      let val = js! {
-          return Math.floor(Math.random() * Math.floor(@{max}));
-      };
-      return val
+        let val = js! {
+            return Math.floor(Math.random() * Math.floor(@{max}));
+        };
+        return val;
     }
 }
 
@@ -74,49 +74,74 @@ impl Piece {
             blocks: blocks.iter().map(|x| Block { x: x.0, y: x.1 }).collect(),
         }
     }
-    
+
     pub fn pre_drop(&self) -> Vec<Block> {
-        self.blocks.iter().map(|b| Block{x: b.x, y: b.y + 1}).collect()
+        self.blocks
+            .iter()
+            .map(|b| Block { x: b.x, y: b.y + 1 })
+            .collect()
     }
-    
+
     pub fn drop(&mut self) {
-        self.blocks = self.blocks.iter().map(|b| Block{x: b.x, y: b.y + 1}).collect()
+        self.blocks = self
+            .blocks
+            .iter()
+            .map(|b| Block { x: b.x, y: b.y + 1 })
+            .collect()
     }
-    
+
     pub fn pre_right(&self) -> Vec<Block> {
-        self.blocks.iter().map(|b| Block{x: b.x + 1, y: b.y}).collect()
+        self.blocks
+            .iter()
+            .map(|b| Block { x: b.x + 1, y: b.y })
+            .collect()
     }
-    
+
     pub fn right(&mut self) {
-        self.blocks = self.blocks.iter().map(|b| Block{x: b.x + 1, y: b.y}).collect()
+        self.blocks = self
+            .blocks
+            .iter()
+            .map(|b| Block { x: b.x + 1, y: b.y })
+            .collect()
     }
-    
+
     pub fn pre_left(&self) -> Vec<Block> {
-        self.blocks.iter().map(|b| Block{x: b.x - 1, y: b.y}).collect()
+        self.blocks
+            .iter()
+            .map(|b| Block { x: b.x - 1, y: b.y })
+            .collect()
     }
-    
+
     pub fn left(&mut self) {
-        self.blocks = self.blocks.iter().map(|b| Block{x: b.x - 1, y: b.y}).collect()
+        self.blocks = self
+            .blocks
+            .iter()
+            .map(|b| Block { x: b.x - 1, y: b.y })
+            .collect()
     }
-    
+
     pub fn pre_up(&self) -> Vec<Block> {
-        self.blocks.iter().map(|b| Block{x: b.x, y: b.y - 1}).collect()
+        self.blocks
+            .iter()
+            .map(|b| Block { x: b.x, y: b.y - 1 })
+            .collect()
     }
-    
+
     pub fn up(&mut self) {
-        self.blocks = self.blocks.iter().map(|b| Block{x: b.x, y: b.y - 1}).collect()
+        self.blocks = self
+            .blocks
+            .iter()
+            .map(|b| Block { x: b.x, y: b.y - 1 })
+            .collect()
     }
 
     pub fn pre_rotate_right(&self) -> Vec<Block> {
         let degree_90 = 90.0_f64.to_radians();
         let rotated_piece = Piece::transpose(self, &self.blocks[0]);
         let rotated_piece = Piece::rotate(&rotated_piece, degree_90);
-        Piece::transpose(
-            &rotated_piece,
-            &self.blocks[0].negate()
-        ).blocks
+        Piece::transpose(&rotated_piece, &self.blocks[0].negate()).blocks
     }
-    
+
     pub fn rotate_right(&mut self) {
         let degree_90 = 90.0_f64.to_radians();
         let rotated_piece = Piece::transpose(self, &self.blocks[0]);
@@ -144,7 +169,6 @@ impl Piece {
                 .collect(),
         }
     }
-    
 }
 
 impl fmt::Display for Piece {

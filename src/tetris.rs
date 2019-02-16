@@ -1,10 +1,9 @@
 use std::fmt;
 
+use canvas::Canvas;
 use piece::Block;
 use piece::Piece;
 use piece::PieceKind;
-use canvas::Canvas;
-
 
 #[derive(Clone)]
 pub struct Tetris {
@@ -42,7 +41,6 @@ impl Tetris {
             self.piece_add(Piece::new(PieceKind::random()));
         }
         self.piece_active_integrate();
-            
     }
 
     pub fn piece_left(&mut self) {
@@ -52,7 +50,7 @@ impl Tetris {
         }
         self.piece_active_integrate();
     }
-    
+
     pub fn piece_right(&mut self) {
         self.piece_disintegrate();
         if self.wont_collide(&self.active_piece.pre_right()) {
@@ -72,7 +70,7 @@ impl Tetris {
     pub fn draw(&self, canvas: &Canvas, block_color: &str) {
         for col in 0..self.width {
             for row in 0..self.height {
-                let idx = self.get_index(&Block{x: col, y: row});
+                let idx = self.get_index(&Block { x: col, y: row });
 
                 let cell_color = match self.cells[idx] {
                     0 => "white",
@@ -82,9 +80,7 @@ impl Tetris {
                 canvas.draw_block(col as u32, row as u32, cell_color);
             }
         }
-
     }
-    
 }
 
 // Private functions.
@@ -95,44 +91,38 @@ impl Tetris {
             self.cells[index] = 1;
         }
     }
-    
+
     fn piece_active_integrate(&mut self) {
         for block in self.active_piece.blocks.iter() {
             let index = ((self.width * (block.y)) + (block.x)) as usize;
             self.cells[index] = 2;
         }
     }
-    
+
     fn piece_disintegrate(&mut self) {
         for block in self.active_piece.blocks.iter() {
             let index = ((self.width * (block.y)) + (block.x)) as usize;
             self.cells[index] = 0;
         }
     }
-    
+
     fn piece_add(&mut self, piece: Piece) {
         self.active_piece = piece;
     }
 
     fn wont_collide(&self, block: &Vec<Block>) -> bool {
-        block.
-        iter().
-        all(
-            |block| {
-                block.x >= 0 &&
-                block.x < (self.width) &&
-                block.y >= 0 &&
-                block.y < (self.height) &&
-                (self.cells[self.get_index(&block)] == 0 ||
-                self.cells[self.get_index(&block)] == 2)
-            }
-        )
+        block.iter().all(|block| {
+            block.x >= 0
+                && block.x < (self.width)
+                && block.y >= 0
+                && block.y < (self.height)
+                && (self.cells[self.get_index(&block)] == 0
+                    || self.cells[self.get_index(&block)] == 2)
+        })
     }
-    
+
     fn at_top(&self, blocks: &Vec<Block>) -> bool {
-        blocks
-        .iter()
-        .any(|block| block.y == 0)
+        blocks.iter().any(|block| block.y == 0)
     }
 
     fn get_index(&self, block: &Block) -> usize {
@@ -147,12 +137,12 @@ impl Tetris {
                 let start = self.width as usize * row;
                 let end = start + self.width as usize;
                 temp.drain(start..end);
-                temp.splice(..0, (0..10).map(|_| 0 ));
+                temp.splice(..0, (0..10).map(|_| 0));
             }
-        } 
+        }
         self.cells = temp;
     }
-    
+
     fn cells(&self) -> *const u8 {
         self.cells.as_ptr()
     }
